@@ -8,6 +8,7 @@ public class cameraControl : MonoBehaviour {
 	
 	public Camera cam { get; private set; }
 	public Rigidbody body { get; private set; }
+	public SphereCollider coll { get; private set; }
 
 	public bool golfMode { get; private set; }
 	public float mouseRatio = 0.5f;
@@ -33,6 +34,7 @@ public class cameraControl : MonoBehaviour {
 	void Start () {
 		cam = GetComponent<Camera> ();
 		body = GetComponent<Rigidbody> ();
+		coll = GetComponent<SphereCollider> ();
 		lastMousePosition = Input.mousePosition;
 		golfMode = true;
 		cameraReset ();
@@ -50,6 +52,8 @@ public class cameraControl : MonoBehaviour {
 			}
 		}
 		if (!golfMode) {
+			// COLLIDER
+			coll.radius = 5f;
 			// ARROW
 			golfBall.instance.arrow.SetActive(false);
 			// CURSOR
@@ -66,6 +70,8 @@ public class cameraControl : MonoBehaviour {
 			if (Input.GetKey(KeyCode.Q)) yAxis -= 1;
 			body.velocity = cam.transform.rotation * new Vector3 (Input.GetAxis("Horizontal"), yAxis, Input.GetAxis("Vertical")) * speed;
 		} else {
+			// COLLIDER
+			coll.radius = 0.06f;
 			// ARROW
 			golfBall.instance.arrow.SetActive(true);
 			// CURSOR
@@ -79,7 +85,7 @@ public class cameraControl : MonoBehaviour {
 				fireDirectionSet = true;
 			}
 			Vector3 angles = fireDirection.eulerAngles;
-			transform.rotation = Quaternion.Euler(new Vector3(angles.x, angles.y + Input.GetAxis("Horizontal"), angles.z));
+			transform.rotation = Quaternion.Euler(new Vector3(angles.x, angles.y + Input.GetAxis("Horizontal") * 3, angles.z));
 			golfBall.instance.arrow.transform.rotation = transform.rotation;
 			fireDirection = transform.rotation;
 			transform.position = golfBall.instance.transform.position + (fireDirection * new Vector3 (0,1,-2));
